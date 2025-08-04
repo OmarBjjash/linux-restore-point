@@ -32,22 +32,39 @@ python3 -m pip install --user pipx
 # Ensure pipx is in your PATH
 python3 -m pipx ensurepath
 ```
-### 3. Install Linux Restore Point
+### 3. Clone Linux Restore Point
 ```bash
-pipx install linux-restore-point
+git clone https://github.com/OmarBjjash/linux-restore-point.git
+
+cd linux-restore-point
+
+pipx install .
+
 ```
 ### 4. Enable Sudo Access
 - To run the tool with sudo, you need to make it accessible in sudo's PATH:
 ```bash
 # Temporary solution (per session):
-sudo env PATH="$PATH" linux-restore-point [command]
+sudo env PATH="$PATH" linux-restore-point [command] # Replace 'command' with a command for example: `sudo env PATH="$PATH" linux-restore-point list` 
+
+#OR
 
 # Permanent solution (add pipx bin to secure_path):
+```
+- Find the pipx binary path to secure_path (find your path with `pipx environments` ):
+ - You will find something like this `PIPX_BIN_DIR=/home/kali/.local/bin`
+- So run this: 
+```bash
 sudo visudo
 ```
-- Add the pipx binary path to secure_path (find your path with `pipx environments` ):
+- And add the `dir` to the following in
 ```bash
-Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/youruser/.local/bin"
+#Before adding:
+
+Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# After adding:
+Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/<YOUR_USER_NAME>/.local/bin"
 ```
 Save and exit (Ctrl+X, then Y to confirm).
 
