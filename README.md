@@ -74,7 +74,7 @@ Name                      Type       Date             Size (MB)
 full_20230805_1430        full       2023-08-05 14:30   1024.50
 system_20230804_0930      system     2023-08-04 09:30     85.75
 ```
-###### Restore from a Point
+##### Restore from a Point
 ```bash
 # Restore with confirmation prompt
 sudo linux-restore-point restore full_20230805_1430
