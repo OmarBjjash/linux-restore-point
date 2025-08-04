@@ -68,11 +68,11 @@ sudo linux-restore-point create --type full --include-usb
 sudo linux-restore-point list
 ```
 ###### Example output:
-<Name                      Type       Date             Size (MB)
+>Name                      Type       Date             Size (MB)
 ---------------------------------------------------------------
 full_20230805_1430        full       2023-08-05 14:30   1024.50
-system_20230804_0930      system     2023-08-04 09:30     85.75>
-
+system_20230804_0930      system     2023-08-04 09:30     85.75
+>
 ###### Restore from a Point
 ```bash
 # Restore with confirmation prompt
@@ -214,8 +214,8 @@ pip install -e .
 
     - This tool comes with NO WARRANTY. Use at your own risk. The authors are not responsible for any data loss or system damage caused by improper use of this software. Always maintain separate backups of critical data.
 
->### Important Notes:
-1. **Replace Placeholders**:
+### Important Notes:
+>1. **Replace Placeholders**:
    - Replace `Myusername` with your actual GitHub username
    - Replace `youruser` in the secure_path with your actual username
 
@@ -231,4 +231,3 @@ pip install -e .
 
 This README contains all the necessary documentation for your Linux Restore Point tool and will render correctly on GitHub.
 >
->>
