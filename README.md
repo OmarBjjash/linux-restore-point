@@ -1,252 +1,129 @@
-# Linux Restore Point
+# **Linux Restore Tool 💾**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)]()
-[![GitHub Release](https://img.shields.io/github/v/release/Myusername/linux-restore-point)]()
+A powerful command-line tool for Linux that brings Windows-like restore point functionality to your system. Easily create snapshots of your critical system configurations and user data, and revert to them when you need to.
 
-A command-line utility for creating and restoring Linux system restore points.
+## **✨ Features**
 
-## Features
-- Create system-only (`/etc`) or full-system (`/etc` + `/home`) backups
-- Optional USB drive inclusion with interactive selection
-- Real-time progress tracking with `pv` (Pipe Viewer)
-- Color-coded console output for better user experience
-- Comprehensive logging with timestamped operation logs
-- Restore point management (list/delete)
-- Robust error handling and safety confirmations
-- Proper Python packaging for easy installation
+* **Flexible Restore Points:**  
+  * **System-only:** Backup just your /etc directory (system configuration files).  
+  * **Full System:** Include both /etc and your /home directory (user data) for a complete snapshot.  
+* **USB Drive Inclusion:** Optionally include mounted USB drives in your backups. The tool will detect them and let you choose which ones to add.  
+* **Seamless Restoration:** Restore your system from any previously created restore point.  
+* **Easy Cleanup:** Delete old or unwanted restore points to save disk space.  
+* **Real-time Progress:** Get visual feedback with a dynamic progress bar during backup and restore operations, powered by pv (Pipe Viewer).  
+* **Comprehensive Logging:** Every create, restore, and delete action generates its own detailed log file, perfect for reviewing operations or troubleshooting.  
+* **Colored Output:** Enjoy clear, at-a-glance status updates in your terminal:  
+  * **Green:** Successful operations.  
+  * **Yellow:** Warnings.  
+  * **Red:** Errors.
 
-## Installation
+## **🚀 Installation**
 
-### 1. Install Dependencies
-```bash
-sudo apt update
-sudo apt install tar pv
-```
-### 2. Install Python Package Manager (pipx)
-```bash
-sudo apt install pipx  # Debian/Ubuntu/Kali
-# OR
-python3 -m pip install --user pipx
+### **System Dependencies**
 
-# Ensure pipx is in your PATH
-python3 -m pipx ensurepath
-```
-### 3. Clone Linux Restore Point
-```bash
-git clone https://github.com/OmarBjjash/linux-restore-point.git
+Before installing the tool, make sure you have pv (Pipe Viewer) and tar installed on your Linux distribution.
 
-cd linux-restore-point
+* **For Debian/Ubuntu/Kali:**  
+  sudo apt update  
+  sudo apt install pv tar
 
-pipx install .
+* **For Fedora/RHEL/CentOS:**  
+  sudo dnf install pv tar
 
-```
-### 4. Enable Sudo Access
-- To run the tool with sudo, you need to make it accessible in sudo's PATH:
-```bash
-# Temporary solution (per session):
-sudo env PATH="$PATH" linux-restore-point [command] # Replace 'command' with a command for example: `sudo env PATH="$PATH" linux-restore-point list` 
+* **For Arch Linux:**  
+  sudo pacman \-S pv tar
 
-#OR
+### **Install the Tool**
 
-# Permanent solution (add pipx bin to secure_path):
-```
-- Find the pipx binary path to secure_path (find your path with `pipx environments` ):
- - You will find something like this `PIPX_BIN_DIR=/home/kali/.local/bin`
-- So run this: 
-```bash
-sudo visudo
-```
-- And add the `dir` to the following in
-```bash
-#Before adding:
+Due to Python's "externally-managed-environment" policy (PEP 668\) on many modern Linux distributions, direct pip install . might be prevented to protect system integrity. Here are the recommended ways to install your tool:
 
-Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+#### **Using pipx (Recommended for Command-Line Applications)**
 
-# After adding:
-Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/<YOUR_USER_NAME>/.local/bin"
-```
-Save and exit (Ctrl+X, then Y to confirm).
+pipx installs Python applications into isolated environments and makes them available globally. It's the easiest way to manage CLI tools.
 
-#### Usage
-##### Create a Restore Point
-```bash
-# System-only backup (only /etc directory)
-sudo linux-restore-point create --type system
+1. **Install pipx** (if you don't have it):  
+   sudo apt install pipx \# For Debian/Ubuntu/Kali  
+   \# OR if pipx is not in your distro's repos (less common for Kali):  
+   \# python3 \-m pip install \--user pipx \--break-system-packages  
+   \# python3 \-m pipx ensurepath
 
-# Full system backup (includes /etc and /home)
-sudo linux-restore-point create --type full
+2. **Navigate to your project directory:**  
+   cd /path/to/your/linux-restore-point
 
-# Include USB drives in backup (interactive selection)
-sudo linux-restore-point create --type full --include-usb
-```
-##### List Available Restore Points
-```bash
-sudo linux-restore-point list
-```
-###### Example output:
-```
-Name                      Type       Date             Size (MB)
----------------------------------------------------------------
-full_20230805_1430        full       2023-08-05 14:30   1024.50
-system_20230804_0930      system     2023-08-04 09:30     85.75
-```
-##### Restore from a Point
-```bash
-# Restore with confirmation prompt
-sudo linux-restore-point restore full_20230805_1430
+3. **Install your tool with pipx:**  
+   pipx install .
 
-# Force restore (skip confirmation - DANGEROUS!)
-sudo linux-restore-point restore system_20230804_0930 --force
-```
-##### Delete a Restore Point
-```bash
-# Delete with confirmation
-sudo linux-restore-point delete full_20230805_1430
+   This will install linux-restore-point in its own isolated environment and make the linux-restore-point command globally available for your user.
 
-# Force delete (skip confirmation)
-sudo linux-restore-point delete system_20230804_0930 --force
-```
-#### Advanced Installation Options
-##### Install from GitHub
-```bash
-pipx install git+https://github.com/Myusername/linux-restore-point.git
+## **💡 Usage**
 
-# Install specific version
-pipx install git+https://github.com/Myusername/linux-restore-point.git@v1.0.0
-```
-##### Install for Development
-```bash
-git clone https://github.com/Myusername/linux-restore-point.git
-cd linux-restore-point
-pipx install .
-```
-##### Logging
-- All operations generate detailed log files stored in:
-`/var/backups/linux_restore_points/logs/`
-- Log files follow the naming convention:
+All operations of linux-restore-point require sudo privileges as they interact with system-level directories and files.
 
-* ` linux_restore_point_create_YYYYMMDD_HHMMSS.log`
+### **Running Directly with sudo (Recommended after sudoers modification)**
 
-*  `linux_restore_point_restore_YYYYMMDD_HHMMSS.log`
+To use linux-restore-point directly with sudo (e.g., sudo linux-restore-point list), you need to modify your system's sudoers configuration to allow sudo to find user-installed binaries. **Always use visudo to edit /etc/sudoers to prevent syntax errors.**
 
-*  `linux_restore_point_delete_YYYYMMDD_HHMMSS.log`
+1. **Open sudoers with visudo:**  
+   sudo visudo
 
-###### Each log contains:
-* Timestamps for all operations
+2. Add your pipx bin directory to secure\_path:  
+   Find the line that starts with Defaults secure\_path= and append your user's pipx binary directory (/home/YOUR\_USERNAME/.local/bin) to it. Replace YOUR\_USERNAME with your actual username (e.g., cyberspace).  
+   *Example secure\_path line before:*  
+   Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
 
-* Command execution details
+   *Example secure\_path line after modification:*  
+   Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/YOUR\_USERNAME/.local/bin"
 
-* Error messages with tracebacks
+3. **Save and Exit visudo:**  
+   * If using vi (default for visudo): Press Esc, then type :wq and press Enter.  
+   * If using nano (if configured): Press Ctrl+X, then Y to confirm save, then Enter.  
+4. **Open a new terminal session** for the changes to take effect.
 
-* Operation metadata
+Now you can use the commands directly:
 
-##### Safety Notes 
-1. Restore Operations Are Destructive:
-    
-    * Restoration will overwrite existing files
-    * Always verify you have current backups
-    * Recommended to restore from a live environment
+* **Create a restore point:**  
+  sudo linux-restore-point create \-n \<name\_of\_backup\> \-t \[system|full\] \[--include-usb\]
 
-2. Full Backups Include Home Directories:
-    
-    * Be mindful of disk space
+  * \-n \<name\_of\_backup\>: A custom, descriptive name for your restore point (e.g., pre\_kernel\_update). A timestamp will be automatically appended.  
+  * \-t system: (Default) Backs up only /etc (your system's configuration files).  
+  * \-t full: Backs up both /etc and /home (your system configuration and all user data).  
+  * \--include-usb: (Optional flag) If present, the tool will detect and prompt you to select any currently mounted USB drives to include in the backup.
 
-    * Consider excluding large media files
+**Example:**sudo linux-restore-point create \-n pre\_big\_software\_install \-t full \--include-usb
 
-3. USB Drive Handling:
+* **List available restore points:**  
+  sudo linux-restore-point list
 
-    * Only includes mounted USB drives.
+  This will display a colored list of all restore points currently stored.  
+* **Restore from a restore point:**  
+  sudo linux-restore-point restore \-n \<full\_restore\_point\_name\>
 
-    * Requires user interaction to select drives.
+  * \<full\_restore\_point\_name\>: The **exact** name of the restore point as shown by linux-restore-point list (e.g., pre\_big\_software\_install\_20250804\_194115).  
+  * **⚠️ WARNING:** Restoring will **overwrite** existing files in the backed-up locations. It is **highly recommended** to perform a restore from a **live Linux environment** (e.g., booting from a USB stick with your Linux distribution) to prevent issues with files being in use and to ensure system stability.
 
-    * Does not backup unmounted or raw devices.
+**Example:**sudo linux-restore-point restore \-n pre\_big\_software\_install\_20250804\_194115
 
+* **Delete a restore point:**  
+  sudo linux-restore-point delete \-n \<full\_restore\_point\_name\>
 
-#### Uninstallation
-```bash
-# Uninstall Python package
-pipx uninstall linux-restore-point
+  * \<full\_restore\_point\_name\>: The exact name of the restore point to delete.  
+  * **⚠️ WARNING:** This action is **irreversible**. Once a restore point is deleted, it cannot be recovered.
 
-# Remove backup data (WARNING: deletes all restore points!)
-sudo rm -rf /var/backups/linux_restore_points
-```
+**Example:**sudo linux-restore-point delete \-n old\_test\_backup\_20250701\_100000
 
-##### Troubleshooting
-###### "Command not found" after installation
-```bash
-# Reload your shell
-exec bash
+### **Alternative: Using sudo env PATH="$PATH" (No sudoers modification)**
 
-# Or manually add pipx to PATH
-export PATH="$HOME/.local/bin:$PATH"
-```
+If you prefer not to modify sudoers, you can always use the more verbose command:  
+sudo env PATH="$PATH" linux-restore-point \<action\> \[options\]
 
-###### Permission Errors
-```bash
-# Ensure restore directory exists
-sudo mkdir -p /var/backups/linux_restore_points
-sudo chmod 700 /var/backups/linux_restore_points
-```
+## **📄 Logging**
 
-###### PV Progress Bar Not Showing
-```bash
-# Verify pv is installed
-sudo apt install pv
+Every create, restore, and delete operation generates its own unique log file. These are stored in /var/backups/linux\_restore\_points/ and named like linux\_restore\_point\_\<action\>\_\<timestamp\>.log. These logs provide detailed information about the process, including any warnings or errors encountered.
 
-# Test pv functionality
-echo "Test" | pv | cat
-```
+## **🤝 Contributing**
 
-#### Contributing
- ###### Contributions are welcome! Here's how to contribute:
+Contributions are welcome\! Feel free to fork the repository, make improvements, and submit pull requests.
 
-1. Fork the repository.
-2. Create a new branch (git checkout -b feature/your-feature).
-3. Commit your changes (git commit -am 'Add some feature').
-4. Push to the branch (git push origin feature/your-feature).
-5. Create a new Pull Request.
+## **📜 License**
 
-##### Development Setup
-```bash
-git clone https://github.com/Myusername/linux-restore-point.git
-cd linux-restore-point
-python3 -m venv venv
-source venv/bin/activate
-pip install -e .
-```
-##### Testing Guidelines
-
-*  Include tests for new features
-
-*  Maintain PEP 8 compliance
-
-*  Use descriptive commit messages
-
-*  Update documentation when adding features
-
-##### License
-  - This project is licensed under the MIT License - see the [LICENSE](https://github.com/OmarBjjash/linux-restore-point/blob/main/LICENSE) file for details.
-
-##### Disclaimer
-
-    - This tool comes with NO WARRANTY. Use at your own risk. The authors are not responsible for any data loss or system damage caused by improper use of this software. Always maintain separate backups of critical data.
-
-### Important Notes:
->1. **Replace Placeholders**:
->   - Replace `Myusername` with your actual GitHub username
->   - Replace `youruser` in the secure_path with your actual username 
-   >
-
->2. **To Use**:
->   - Copy this entire code block
->  - Paste it into your `README.md` file
->   - Save the file
->
->3. **Formatting**:
->   - The markdown is properly formatted with headers, code blocks, and sections
->   - All code examples are in separate code blocks with language identifiers
->   - Badges will automatically work when uploaded to GitHub
->
->>This README contains all the necessary documentation for your Linux Restore Point tool and will render correctly on GitHub.
->>
+This project is licensed under the MIT License. See the LICENSE file for full details.
