@@ -217,19 +217,19 @@ pip install -e .
 
 ### Important Notes:
 >1. **Replace Placeholders**:
-   - Replace `Myusername` with your actual GitHub username
-   - Replace `youruser` in the secure_path with your actual username 
+>   - Replace `Myusername` with your actual GitHub username
+>   - Replace `youruser` in the secure_path with your actual username 
    >
 
 >2. **To Use**:
-   - Copy this entire code block
-   - Paste it into your `README.md` file
-   - Save the file
+>   - Copy this entire code block
+>  - Paste it into your `README.md` file
+>   - Save the file
 >
 >3. **Formatting**:
-   - The markdown is properly formatted with headers, code blocks, and sections
-   - All code examples are in separate code blocks with language identifiers
-   - Badges will automatically work when uploaded to GitHub
+>   - The markdown is properly formatted with headers, code blocks, and sections
+>   - All code examples are in separate code blocks with language identifiers
+>   - Badges will automatically work when uploaded to GitHub
 >
 >>This README contains all the necessary documentation for your Linux Restore Point tool and will render correctly on GitHub.
 >>
