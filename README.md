@@ -68,11 +68,12 @@ sudo linux-restore-point create --type full --include-usb
 sudo linux-restore-point list
 ```
 ###### Example output:
->Name                      Type       Date             Size (MB)
+```
+Name                      Type       Date             Size (MB)
 ---------------------------------------------------------------
 full_20230805_1430        full       2023-08-05 14:30   1024.50
 system_20230804_0930      system     2023-08-04 09:30     85.75
->
+```
 ###### Restore from a Point
 ```bash
 # Restore with confirmation prompt
@@ -103,7 +104,7 @@ git clone https://github.com/Myusername/linux-restore-point.git
 cd linux-restore-point
 pipx install .
 ```
-###### Logging
+##### Logging
 - All operations generate detailed log files stored in:
 `/var/backups/linux_restore_points/logs/`
 - Log files follow the naming convention:
@@ -217,17 +218,18 @@ pip install -e .
 ### Important Notes:
 >1. **Replace Placeholders**:
    - Replace `Myusername` with your actual GitHub username
-   - Replace `youruser` in the secure_path with your actual username
+   - Replace `youruser` in the secure_path with your actual username 
+   >
 
-2. **To Use**:
+>2. **To Use**:
    - Copy this entire code block
    - Paste it into your `README.md` file
    - Save the file
-
-3. **Formatting**:
+>
+>3. **Formatting**:
    - The markdown is properly formatted with headers, code blocks, and sections
    - All code examples are in separate code blocks with language identifiers
    - Badges will automatically work when uploaded to GitHub
-
-This README contains all the necessary documentation for your Linux Restore Point tool and will render correctly on GitHub.
 >
+>>This README contains all the necessary documentation for your Linux Restore Point tool and will render correctly on GitHub.
+>>
