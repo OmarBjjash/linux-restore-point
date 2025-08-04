@@ -76,10 +76,10 @@ To use linux-restore-point directly with sudo (e.g., sudo linux-restore-point li
 ```
 2. Add your pipx bin directory to secure\_path:  
    Find the line that starts with Defaults secure\_path= and append your user's pipx binary directory (/home/YOUR\_USERNAME/.local/bin) to it. Replace YOUR\_USERNAME with your actual username (e.g., cyberspace).  
-   *Example secure\_path line before:*  
+   * *Example secure\_path line before:*  
 
-   `Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"`
-
+  > `Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"`
+>
    *Example secure\_path line after modification:*  
 
    `Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/YOUR\_USERNAME/.local/bin"`
