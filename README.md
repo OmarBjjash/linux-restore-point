@@ -208,7 +208,7 @@ pip install -e .
 *  Update documentation when adding features
 
 ##### License
-  - This project is licensed under the MIT License - see the [LICENSE] file for details. (https://github.com/OmarBjjash/linux-restore-point/blob/main/LICENSE)
+  - This project is licensed under the MIT License - see the [LICENSE](https://github.com/OmarBjjash/linux-restore-point/blob/main/LICENSE) file for details.
 
 ##### Disclaimer
 
@@ -231,3 +231,4 @@ pip install -e .
 
 This README contains all the necessary documentation for your Linux Restore Point tool and will render correctly on GitHub.
 >
+>>
