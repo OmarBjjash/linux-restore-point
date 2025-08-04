@@ -46,10 +46,10 @@ pipx installs Python applications into isolated environments and makes them avai
 
 1. **Install pipx** (if you don't have it):  
 ```bash
-   sudo apt install pipx \# For Debian/Ubuntu/Kali  
-   \# OR if pipx is not in your distro's repos (less common for Kali):  
-   \# python3 \-m pip install \--user pipx \--break-system-packages  
-   \# python3 \-m pipx ensurepath
+   sudo apt install pipx # For Debian/Ubuntu/Kali  
+   # OR if pipx is not in your distro's repos (less common for Kali):  
+   python3 \-m pip install \--user pipx --break-system-packages  
+   python3 \-m pipx ensurepath
 ```
 
 2. **Navigate to your project directory:**  
