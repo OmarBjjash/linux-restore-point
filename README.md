@@ -24,15 +24,18 @@ A powerful command-line tool for Linux that brings Windows-like restore point fu
 Before installing the tool, make sure you have pv (Pipe Viewer) and tar installed on your Linux distribution.
 
 * **For Debian/Ubuntu/Kali:**  
+```bash
   sudo apt update  
   sudo apt install pv tar
-
+```
 * **For Fedora/RHEL/CentOS:**  
+```bash
   sudo dnf install pv tar
-
+```
 * **For Arch Linux:**  
+```bash
   sudo pacman \-S pv tar
-
+```
 ### **Install the Tool**
 
 Due to Python's "externally-managed-environment" policy (PEP 668\) on many modern Linux distributions, direct pip install . might be prevented to protect system integrity. Here are the recommended ways to install your tool:
@@ -42,17 +45,21 @@ Due to Python's "externally-managed-environment" policy (PEP 668\) on many moder
 pipx installs Python applications into isolated environments and makes them available globally. It's the easiest way to manage CLI tools.
 
 1. **Install pipx** (if you don't have it):  
+```bash
    sudo apt install pipx \# For Debian/Ubuntu/Kali  
    \# OR if pipx is not in your distro's repos (less common for Kali):  
    \# python3 \-m pip install \--user pipx \--break-system-packages  
    \# python3 \-m pipx ensurepath
+```
 
 2. **Navigate to your project directory:**  
+```bash
    cd /path/to/your/linux-restore-point
-
+```
 3. **Install your tool with pipx:**  
+```bash   
    pipx install .
-
+```
    This will install linux-restore-point in its own isolated environment and make the linux-restore-point command globally available for your user.
 
 ## **💡 Usage**
@@ -64,15 +71,18 @@ All operations of linux-restore-point require sudo privileges as they interact w
 To use linux-restore-point directly with sudo (e.g., sudo linux-restore-point list), you need to modify your system's sudoers configuration to allow sudo to find user-installed binaries. **Always use visudo to edit /etc/sudoers to prevent syntax errors.**
 
 1. **Open sudoers with visudo:**  
+```bash
    sudo visudo
-
+```
 2. Add your pipx bin directory to secure\_path:  
    Find the line that starts with Defaults secure\_path= and append your user's pipx binary directory (/home/YOUR\_USERNAME/.local/bin) to it. Replace YOUR\_USERNAME with your actual username (e.g., cyberspace).  
    *Example secure\_path line before:*  
-   Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+
+   `Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"`
 
    *Example secure\_path line after modification:*  
-   Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/YOUR\_USERNAME/.local/bin"
+
+   `Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/YOUR\_USERNAME/.local/bin"`
 
 3. **Save and Exit visudo:**  
    * If using vi (default for visudo): Press Esc, then type :wq and press Enter.  
@@ -82,12 +92,13 @@ To use linux-restore-point directly with sudo (e.g., sudo linux-restore-point li
 Now you can use the commands directly:
 
 * **Create a restore point:**  
+```bash
   sudo linux-restore-point create \-n \<name\_of\_backup\> \-t \[system|full\] \[--include-usb\]
-
-  * \-n \<name\_of\_backup\>: A custom, descriptive name for your restore point (e.g., pre\_kernel\_update). A timestamp will be automatically appended.  
-  * \-t system: (Default) Backs up only /etc (your system's configuration files).  
-  * \-t full: Backs up both /etc and /home (your system configuration and all user data).  
-  * \--include-usb: (Optional flag) If present, the tool will detect and prompt you to select any currently mounted USB drives to include in the backup.
+```
+ > * \-n \<name\_of\_backup\>: A custom, descriptive name for your restore point (e.g., pre\_kernel\_update). A timestamp will be automatically appended.  
+ > * \-t system: (Default) Backs up only /etc (your system's configuration files).  
+ > * \-t full: Backs up both /etc and /home (your system configuration and all user data).  
+ > * \--include-usb: (Optional flag) If present, the tool will detect and prompt you to select any currently mounted USB drives to include in the backup.
 
 **Example:**sudo linux-restore-point create \-n pre\_big\_software\_install \-t full \--include-usb
 
