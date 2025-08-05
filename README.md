@@ -111,9 +111,10 @@ sudo visudo
     * If using nano (if configured): Press Ctrl+X, then Y to confirm save, then Enter.  
   * **Open a new terminal session** for the changes to take effect.
 
-4. **Navigate to your project directory:**  
+4. **Clone the tool and Navigate to your project directory:**  
 ```bash
-   cd /path/to/your/linux-restore-point
+   git clone https://github.com/OmarBjjash/linux-restore-point.git
+   cd linux-restore-point
 ```
 
 5. **Install your tool with pipx:**  
