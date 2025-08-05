@@ -203,12 +203,27 @@ def create_restore_point(name, backup_type, include_usb):
     archive_path = os.path.join(RESTORE_BASE_DIR, f"{restore_point_name}.tar.gz")
 
     backup_targets = []
+    exclude_paths = [
+        # Standard virtual/temporary filesystems and mount points to exclude from root backup
+        "/proc", "/sys", "/dev", "/run", "/tmp", "/mnt", "/media",
+        "/lost+found", # Filesystem check directory
+        "/var/tmp", "/var/lock", "/var/run", # Temporary/volatile data
+        "/var/cache", # Cache files, can be large and regenerated
+        "/var/log", # Logs can be large and are often not needed in a restore point
+        "/var/spool", # Spool directories (e.g., mail queues, print queues)
+        "/var/backups", # Crucially, exclude the backup directory itself!
+        os.path.join(RESTORE_BASE_DIR, "*") # Explicitly exclude the restore point base directory
+    ]
+
     if backup_type == "system":
         backup_targets = ["/etc"]
         logging.info("Creating a system-only restore point (backing up /etc).")
+        # For system-only, we don't need all the root exclusions, but it doesn't hurt.
+        # Could refine this to only exclude /var/backups if only /etc is target.
     elif backup_type == "full":
-        backup_targets = ["/etc", "/home"]
-        logging.info("Creating a full system restore point (backing up /etc and /home).")
+        backup_targets = ["/"] # Target the entire root filesystem
+        logging.info("Creating a full system restore point (backing up / and user data).")
+        # Note: /home is implicitly included in / but explicitly handled by user selection for USB
     else:
         logging.error(f"Invalid backup type specified: {backup_type}. Must be 'system' or 'full'.")
         sys.exit(1)
@@ -244,11 +259,11 @@ def create_restore_point(name, backup_type, include_usb):
             else:
                 logging.info("No USB drives selected or validly entered.")
 
-    exclude_paths = [
-        "/proc", "/sys", "/dev", "/run", "/tmp", "/mnt", "/media",
-        os.path.join(RESTORE_BASE_DIR, "*")
-    ]
-
+    # Construct the tar command
+    # -c: Create archive
+    # -P: Do not strip leading '/' from file names (important for absolute paths)
+    # --absolute-names: Store file names with leading slashes (crucial for restoration to root)
+    # -f -: Write to stdout (for piping to pv)
     tar_command_parts = [
         "tar", "-c", "-P", "--absolute-names"
     ]
@@ -261,6 +276,7 @@ def create_restore_point(name, backup_type, include_usb):
     for target in backup_targets:
         try:
             temp_exclude_file = None
+            # Only apply --exclude-from to du if there are actual exclusions
             if exclude_paths:
                 temp_exclude_file = os.path.join("/tmp", f"tar_excludes_{os.getpid()}.txt")
                 with open(temp_exclude_file, "w") as f:

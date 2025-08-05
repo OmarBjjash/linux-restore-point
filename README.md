@@ -5,8 +5,8 @@ A powerful command-line tool for Linux that brings Windows-like restore point fu
 ## **✨ Features**
 
 * **Flexible Restore Points:**  
-  * **System-only:** Backup just your /etc directory (system configuration files).  
-  * **Full System:** Include both /etc and your /home directory (user data) for a complete snapshot.  
+  * **System-only:** Backup just your / directory (system configuration files).  
+  * **Full System:** Include both / and your /home directory (user data) for a complete snapshot.  
 * **USB Drive Inclusion:** Optionally include mounted USB drives in your backups. The tool will detect them and let you choose which ones to add.  
 * **Seamless Restoration:** Restore your system from any previously created restore point.  
 * **Easy Cleanup:** Delete old or unwanted restore points to save disk space.  
