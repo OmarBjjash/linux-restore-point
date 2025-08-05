@@ -1,4 +1,4 @@
-# **Linux Restore Tool 💾**
+# **Linux Restore Point Tool 💾**
 
 A powerful command-line tool for Linux that brings Windows-like restore point functionality to your system. Easily create snapshots of your critical system configurations and user data, and revert to them when you need to.
 
