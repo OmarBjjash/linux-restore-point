@@ -34,7 +34,7 @@ Before installing the tool, make sure you have pv (Pipe Viewer) and tar installe
 ```
 * **For Arch Linux:**  
 ```bash
-  sudo pacman \-S pv tar
+  sudo pacman -S pv tar
 ```
 ### **Install the Tool**
 
@@ -51,8 +51,8 @@ pipx installs Python applications into isolated environments and makes them avai
 ```
   * OR if pipx is not in your distro's repos (less common for Kali):
 ```bash  
-   python3 \-m pip install \--user pipx --break-system-packages  
-   python3 \-m pipx ensurepath
+   python3 -m pip install --user pipx --break-system-packages  
+   python3 -m pipx ensurepath
 ```
 2. Add pipx path to the secure path to be able to run it with `sudo`:
   
