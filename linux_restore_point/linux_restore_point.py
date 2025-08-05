@@ -51,7 +51,8 @@ def configure_per_process_logging(action_name, timestamp):
     Configures logging for a specific process, creating a unique log file.
     Removes existing handlers to prevent duplicate output.
     """
-    log_file_name = f"linux_restore_point_{action_name}_{timestamp}.log" # Updated log file name
+    # This function is now only called when root privileges are confirmed.
+    log_file_name = f"linux_restore_point_{action_name}_{timestamp}.log"
     process_log_file_path = os.path.join(RESTORE_BASE_DIR, log_file_name)
 
     # Get the root logger
@@ -89,13 +90,16 @@ def run_command(command, check_sudo=False, capture_output=True):
     If check_sudo is True, it will verify if the script is run with root privileges.
     """
     if check_sudo and os.geteuid() != 0:
-        logging.error("Error: This operation requires root privileges. Please run with 'sudo'.")
+        # This check is now also performed explicitly at the start of main operations.
+        # This specific branch should ideally not be hit if checks are done earlier.
+        print(f"{ColoredFormatter.RED}Error: This operation requires root privileges. Please run with 'sudo'.{ColoredFormatter.RESET}", file=sys.stderr)
         sys.exit(1)
     try:
         result = subprocess.run(command, shell=True, check=True,
                                 capture_output=capture_output, text=True)
 
         if capture_output and result.stderr:
+            # Log stderr as a warning if it exists, but don't fail the command unless check=True caught it
             logging.warning(f"Command '{command}' produced stderr: {result.stderr.strip()}")
 
         return result.stdout.strip() if capture_output else None
@@ -123,10 +127,11 @@ def ensure_restore_dir():
         run_command(f"chmod 700 {RESTORE_BASE_DIR}", check_sudo=True)
 
 # Ensure the base directory exists before any logging or operations
+# This global call ensures the directory exists before any logging attempts
 try:
     ensure_restore_dir()
 except SystemExit:
-    print("Failed to initialize restore directory. Exiting.")
+    print(f"{ColoredFormatter.RED}Failed to initialize restore directory. Exiting.{ColoredFormatter.RESET}", file=sys.stderr)
     sys.exit(1)
 
 def check_pv_installed():
@@ -135,6 +140,8 @@ def check_pv_installed():
         subprocess.run("pv --version", shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
+        # This warning is now handled by the main logging system, which is configured
+        # after root check, so it will be colored if root, or just print if not.
         logging.warning("'pv' (Pipe Viewer) not found. Progress bar will not be displayed.")
         logging.warning("To enable progress, please install it (e.g., 'sudo apt install pv' or 'sudo yum install pv').")
         return False
@@ -185,6 +192,10 @@ def create_restore_point(name, backup_type, include_usb):
     Creates a new restore point.
     A restore point is a compressed tar archive of the specified system directories.
     """
+    if os.geteuid() != 0:
+        print(f"{ColoredFormatter.RED}Error: 'create' operation requires root privileges. Please run with 'sudo'.{ColoredFormatter.RESET}", file=sys.stderr)
+        sys.exit(1)
+
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     current_log_file = configure_per_process_logging("create", timestamp)
 
@@ -289,6 +300,11 @@ def create_restore_point(name, backup_type, include_usb):
 
 def list_restore_points():
     """Lists all available restore points."""
+    # Check for root privileges immediately
+    if os.geteuid() != 0:
+        print(f"{ColoredFormatter.RED}Error: 'list' operation requires root privileges. Please run with 'sudo'.{ColoredFormatter.RESET}", file=sys.stderr)
+        sys.exit(1)
+
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     current_log_file = configure_per_process_logging("list", timestamp) # Reconfigure logging for list command
 
@@ -300,9 +316,10 @@ def list_restore_points():
                 if item.endswith(".tar.gz"):
                     restore_points.append(item.replace('.tar.gz', ''))
         except PermissionError:
-            logging.error(f"Permission denied when listing directory: {RESTORE_BASE_DIR}. Ensure you have root privileges.")
+            # This block should ideally not be hit if the initial geteuid() check passes
+            logging.error(f"Permission denied when listing directory: {RESTORE_BASE_DIR}. This should not happen if run as root.")
             logging.info(f"Process log file: {current_log_file}")
-            return
+            sys.exit(1) # Exit if somehow permission is still denied after root check
 
     if not restore_points:
         print(f"{ColoredFormatter.YELLOW}No restore points found.{ColoredFormatter.RESET}") # Changed to yellow for clarity
@@ -320,6 +337,10 @@ def restore_from_point(name):
     Restores the system from a specified restore point.
     WARNING: This will overwrite existing files in the backed-up directories.
     """
+    if os.geteuid() != 0:
+        print(f"{ColoredFormatter.RED}Error: 'restore' operation requires root privileges. Please run with 'sudo'.{ColoredFormatter.RESET}", file=sys.stderr)
+        sys.exit(1)
+
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     current_log_file = configure_per_process_logging("restore", timestamp)
 
@@ -327,7 +348,7 @@ def restore_from_point(name):
 
     if not os.path.exists(archive_path):
         logging.error(f"Error: Restore point '{name}' not found at {archive_path}")
-        list_restore_points()
+        list_restore_points() # This call will now also check for root, which is good
         sys.exit(1)
 
     logging.warning(f"WARNING: Restoring from '{name}'. This will overwrite existing files on your system.")
@@ -360,6 +381,10 @@ def delete_restore_point(name):
     """
     Deletes a specified restore point.
     """
+    if os.geteuid() != 0:
+        print(f"{ColoredFormatter.RED}Error: 'delete' operation requires root privileges. Please run with 'sudo'.{ColoredFormatter.RESET}", file=sys.stderr)
+        sys.exit(1)
+
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     current_log_file = configure_per_process_logging("delete", timestamp)
 
@@ -367,7 +392,7 @@ def delete_restore_point(name):
 
     if not os.path.exists(archive_path):
         logging.error(f"Error: Restore point '{name}' not found at {archive_path}")
-        list_restore_points()
+        list_restore_points() # This call will now also check for root, which is good
         sys.exit(1)
 
     logging.warning(f"WARNING: You are about to delete the restore point '{name}'. This action cannot be undone.")
