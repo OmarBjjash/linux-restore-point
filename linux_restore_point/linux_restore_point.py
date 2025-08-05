@@ -187,9 +187,9 @@ def get_mounted_usb_drives():
 
 # --- Main Operations ---
 
-def create_restore_point(name, backup_type, include_usb):
+def create_restore_point(name, include_usb): # Removed backup_type parameter
     """
-    Creates a new restore point.
+    Creates a new restore point. This will always be a full system backup (entire / filesystem).
     A restore point is a compressed tar archive of the specified system directories.
     """
     if os.geteuid() != 0:
@@ -202,9 +202,11 @@ def create_restore_point(name, backup_type, include_usb):
     restore_point_name = f"{name}_{timestamp}" if name else f"restore_{timestamp}"
     archive_path = os.path.join(RESTORE_BASE_DIR, f"{restore_point_name}.tar.gz")
 
-    backup_targets = []
+    backup_targets = ["/"] # Always target the entire root filesystem
+    logging.info("Creating a full system restore point (backing up the entire '/' filesystem including user data).")
+
+    # Comprehensive list of directories to exclude from a full root backup
     exclude_paths = [
-        # Standard virtual/temporary filesystems and mount points to exclude from root backup
         "/proc", "/sys", "/dev", "/run", "/tmp", "/mnt", "/media",
         "/lost+found", # Filesystem check directory
         "/var/tmp", "/var/lock", "/var/run", # Temporary/volatile data
@@ -214,19 +216,6 @@ def create_restore_point(name, backup_type, include_usb):
         "/var/backups", # Crucially, exclude the backup directory itself!
         os.path.join(RESTORE_BASE_DIR, "*") # Explicitly exclude the restore point base directory
     ]
-
-    if backup_type == "system":
-        backup_targets = ["/etc"]
-        logging.info("Creating a system-only restore point (backing up /etc).")
-        # For system-only, we don't need all the root exclusions, but it doesn't hurt.
-        # Could refine this to only exclude /var/backups if only /etc is target.
-    elif backup_type == "full":
-        backup_targets = ["/"] # Target the entire root filesystem
-        logging.info("Creating a full system restore point (backing up / and user data).")
-        # Note: /home is implicitly included in / but explicitly handled by user selection for USB
-    else:
-        logging.error(f"Invalid backup type specified: {backup_type}. Must be 'system' or 'full'.")
-        sys.exit(1)
 
     if include_usb:
         usb_drives = get_mounted_usb_drives()
@@ -450,16 +439,17 @@ def main():
         "-n", "--name",
         help="Name for the restore point (for 'create', 'restore', and 'delete' actions)."
     )
-    parser.add_argument(
-        "-t", "--type",
-        choices=["system", "full"],
-        default="system",
-        help="""
-        Type of restore point to create (for 'create' action only):
-        system: Backs up /etc (system configuration files). (default)
-        full:   Backs up /etc and /home (system and user data).
-        """
-    )
+    # Removed the -t/--type argument as it's no longer needed
+    # parser.add_argument(
+    #     "-t", "--type",
+    #     choices=["system", "full"],
+    #     default="system",
+    #     help="""
+    #     Type of restore point to create (for 'create' action only):
+    #     system: Backs up /etc (system configuration files). (default)
+    #     full:   Backs up /etc and /home (system and user data).
+    #     """
+    # )
     parser.add_argument(
         "--include-usb",
         action="store_true",
@@ -475,7 +465,8 @@ def main():
     # Logging for specific actions will be configured within their respective functions.
 
     if args.action == "create":
-        create_restore_point(args.name, args.type, args.include_usb)
+        # Removed backup_type from the call
+        create_restore_point(args.name, args.include_usb)
     elif args.action == "list":
         list_restore_points()
     elif args.action == "restore":

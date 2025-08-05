@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
 import os
-from linux_restore_point import __version__
 
 # Read the long description from the README.md file
 this_directory = os.path.abspath(os.path.dirname(__file__))
@@ -8,22 +7,23 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='linux-restore-point', # Changed name
-    version=__version__,
+    name='linux-restore-point',
+    version='0.1.0',
     packages=find_packages(),
     install_requires=[
-
+        # No specific Python packages are strictly required beyond standard library
+        # for the core functionality. 'pv' is a system dependency.
     ],
     entry_points={
         'console_scripts': [
-            'linux-restore-point=linux_restore_point.linux_restore_point:main', # Updated entry point
+            'linux-restore-point=linux_restore_point.linux_restore_point:main',
         ],
     },
     author='Omar Bajjash',
     description='A command-line tool for creating and restoring Linux system restore points.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/OmarBjjash/linux-restore-point',
+    url='https://github.com/yourusername/linux-restore-point', # <<< REMEMBER TO CHANGE THIS
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',

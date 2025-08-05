@@ -4,8 +4,6 @@ A powerful command-line tool for Linux that brings Windows-like restore point fu
 
 ## **✨ Features**
 
-* **Flexible Restore Points:**  
-  * **System-only:** Backup just your / directory (system configuration files).  
   * **Full System:** Include both / and your /home directory (user data) for a complete snapshot.  
 * **USB Drive Inclusion:** Optionally include mounted USB drives in your backups. The tool will detect them and let you choose which ones to add.  
 * **Seamless Restoration:** Restore your system from any previously created restore point.  
@@ -133,15 +131,11 @@ Now you can use the commands directly:
 
 * **Example of Creating a restore point:**  
 ```bash
-  sudo linux-restore-point create -n <name_of_backup> -t [system|full]
+  sudo linux-restore-point create -n <name_of_backup>
 ```
 
-  - `full` the entire system with user data.
-  - `system` only the system no user data.
 
- > * \-n \<name\_of\_backup\>: A custom, descriptive name for your restore point (e.g., pre\_kernel\_update). A timestamp will be automatically appended.  
- > * \-t system: (Default) Backs up only /etc (your system's configuration files).  
- > * \-t full: Backs up both /etc and /home (your system configuration and all user data).  
+ > * \-n \<name\_of\_backup\>: A custom, descriptive name for your restore point (e.g., pre\_kernel\_update). A timestamp will be automatically appended.   
  > * \--include-usb: (Optional flag) If present, the tool will detect and prompt you to select any currently mounted USB drives to include in the backup.
 * **Example of listing restore points**
 ```bash
