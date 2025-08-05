@@ -45,18 +45,78 @@ Due to Python's "externally-managed-environment" policy (PEP 668\) on many moder
 pipx installs Python applications into isolated environments and makes them available globally. It's the easiest way to manage CLI tools.
 
 1. **Install pipx** (if you don't have it):  
+  * For Debian / Ubuntu / Kali:
 ```bash
-   sudo apt install pipx # For Debian/Ubuntu/Kali  
-   # OR if pipx is not in your distro's repos (less common for Kali):  
+   sudo apt install pipx   
+```
+  * OR if pipx is not in your distro's repos (less common for Kali):
+```bash  
    python3 \-m pip install \--user pipx --break-system-packages  
    python3 \-m pipx ensurepath
 ```
+2. Add pipx path to the secure path to be able to run it with `sudo`:
+  
+  * Find the pipx path:
 
-2. **Navigate to your project directory:**  
+```bash
+pipx environment
+```
+  * You should see something like this:
+```BASH
+  Environment variables (set by user):
+
+  PIPX_HOME=
+  PIPX_GLOBAL_HOME=
+  PIPX_BIN_DIR=
+  PIPX_GLOBAL_BIN_DIR=
+  PIPX_MAN_DIR=
+  PIPX_GLOBAL_MAN_DIR=
+  PIPX_SHARED_LIBS=
+  PIPX_DEFAULT_PYTHON=
+  PIPX_FETCH_MISSING_PYTHON=
+  USE_EMOJI=
+  PIPX_HOME_ALLOW_SPACE=
+
+  Derived values (computed by pipx):
+
+  PIPX_HOME=/home/YOUR_USERNAME/.local/share/pipx
+  PIPX_BIN_DIR=/home/YOUR_USERNAME/.local/bin # <--- Copy the `BIN` path
+  PIPX_MAN_DIR=/home/YOUR_USERNAME/.local/share/man
+  PIPX_SHARED_LIBS=/home/YOUR_USERNAME/.local/share/pipx/shared
+  PIPX_LOCAL_VENVS=/home/YOUR_USERNAME/.local/share/pipx/venvs
+  PIPX_LOG_DIR=/home/YOUR_USERNAME/.local/state/pipx/log
+  PIPX_TRASH_DIR=/home/YOUR_USERNAME/.local/share/pipx/trash
+  PIPX_VENV_CACHEDIR=/home/YOUR_USERNAME/.cache/pipx
+  PIPX_STANDALONE_PYTHON_CACHEDIR=/home/YOUR_USERNAME/.local/share/pipx/py
+  PIPX_DEFAULT_PYTHON=/usr/bin/python3.13
+  USE_EMOJI=true
+  PIPX_HOME_ALLOW_SPACE=false
+```
+  * Copy the `BIN` path
+
+3. **Open sudoers with visudo:**  
+```bash
+sudo visudo
+```
+  * look for a line like this:
+  `Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin`
+  * Add the copied `pipx BIN` path to is so it will be look like this:
+  `Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:<path/to/pipx/bin/path>`
+
+  - example
+  `Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/YOUR_USERNAME/.local/bin`
+
+  * **Save and Exit visudo:**  
+     * If using vi (default for visudo): Press Esc, then type :wq and press Enter.  
+    * If using nano (if configured): Press Ctrl+X, then Y to confirm save, then Enter.  
+  * **Open a new terminal session** for the changes to take effect.
+
+4. **Navigate to your project directory:**  
 ```bash
    cd /path/to/your/linux-restore-point
 ```
-3. **Install your tool with pipx:**  
+
+5. **Install your tool with pipx:**  
 ```bash   
    pipx install .
 ```
@@ -66,66 +126,55 @@ pipx installs Python applications into isolated environments and makes them avai
 
 All operations of linux-restore-point require sudo privileges as they interact with system-level directories and files.
 
-### **Running Directly with sudo (Recommended after sudoers modification)**
 
-To use linux-restore-point directly with sudo (e.g., sudo linux-restore-point list), you need to modify your system's sudoers configuration to allow sudo to find user-installed binaries. **Always use visudo to edit /etc/sudoers to prevent syntax errors.**
-
-1. **Open sudoers with visudo:**  
-```bash
-   sudo visudo
-```
-2. Add your pipx bin directory to secure\_path:  
-   Find the line that starts with Defaults secure\_path= and append your user's pipx binary directory (/home/YOUR\_USERNAME/.local/bin) to it. Replace YOUR\_USERNAME with your actual username (e.g., cyberspace).  
-   * *Example secure\_path line before:*  
-
-  ```Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"```
-
-   * *Example secure\_path line after modification:*  
-
-   ```Defaults    secure\_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/YOUR\_USERNAME/.local/bin"```
-
-3. **Save and Exit visudo:**  
-   * If using vi (default for visudo): Press Esc, then type :wq and press Enter.  
-   * If using nano (if configured): Press Ctrl+X, then Y to confirm save, then Enter.  
-4. **Open a new terminal session** for the changes to take effect.
 
 Now you can use the commands directly:
 
-* **Create a restore point:**  
+* **Example of Creating a restore point:**  
 ```bash
-  sudo linux-restore-point create \-n \<name\_of\_backup\> \-t \[system|full\] \[--include-usb\]
+  sudo linux-restore-point create -n <name_of_backup> -t [system|full]
 ```
+
+  - `full` the entire system with user data.
+  - `system` only the system no user data.
+
  > * \-n \<name\_of\_backup\>: A custom, descriptive name for your restore point (e.g., pre\_kernel\_update). A timestamp will be automatically appended.  
  > * \-t system: (Default) Backs up only /etc (your system's configuration files).  
  > * \-t full: Backs up both /etc and /home (your system configuration and all user data).  
  > * \--include-usb: (Optional flag) If present, the tool will detect and prompt you to select any currently mounted USB drives to include in the backup.
+* **Example of listing restore points**
+```bash
+sudo linux-restore-point list
+```
+  - out put will look like:
+```bash
+Available Restore Points:
+- mysecondbackup_20250804_212105
+```
 
-**Example:**sudo linux-restore-point create \-n pre\_big\_software\_install \-t full \--include-usb
-
-* **List available restore points:**  
-  sudo linux-restore-point list
-
-  This will display a colored list of all restore points currently stored.  
-* **Restore from a restore point:**  
-  sudo linux-restore-point restore \-n \<full\_restore\_point\_name\>
+* **Example of Restoring a restore point**
+```bash
+sudo linux-restore-point restore -n <Restore_point_name>
+```
 
   * \<full\_restore\_point\_name\>: The **exact** name of the restore point as shown by linux-restore-point list (e.g., pre\_big\_software\_install\_20250804\_194115).  
   * **⚠️ WARNING:** Restoring will **overwrite** existing files in the backed-up locations. It is **highly recommended** to perform a restore from a **live Linux environment** (e.g., booting from a USB stick with your Linux distribution) to prevent issues with files being in use and to ensure system stability.
 
-**Example:**sudo linux-restore-point restore \-n pre\_big\_software\_install\_20250804\_194115
 
-* **Delete a restore point:**  
-  sudo linux-restore-point delete \-n \<full\_restore\_point\_name\>
-
+* **Delete a restore point:** 
+```bash 
+  sudo linux-restore-point delete -n <full_restore_point_name\>
+```
   * \<full\_restore\_point\_name\>: The exact name of the restore point to delete.  
   * **⚠️ WARNING:** This action is **irreversible**. Once a restore point is deleted, it cannot be recovered.
 
-**Example:**sudo linux-restore-point delete \-n old\_test\_backup\_20250701\_100000
 
 ### **Alternative: Using sudo env PATH="$PATH" (No sudoers modification)**
 
-If you prefer not to modify sudoers, you can always use the more verbose command:  
+If you prefer not to modify sudoers, you can always use the more verbose command:
+```bash
 sudo env PATH="$PATH" linux-restore-point \<action\> \[options\]
+```
 
 ## **📄 Logging**
 
