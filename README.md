@@ -187,4 +187,4 @@ Contributions are welcome\! Feel free to fork the repository, make improvements,
 
 ## **📜 License**
 
-This project is licensed under the MIT License. See the LICENSE file for full details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/OmarBjjash/linux-restore-point/blob/main/LICENSE) file for full details.
